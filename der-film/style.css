@@ -19,7 +19,8 @@
   color: #b3413d;
 
   display: grid;
-  grid-template-columns: minmax(10vw, 40vw) max-content min-content;
+  /* grid-template-columns: minmax(10vw, 40vw) max-content min-content; */
+  grid-template-columns: minmax(10vw, 40vw) minmax(max-content, 60vw) min-content;
   grid-template-rows: 3vh auto 1fr min-content auto 0.5vh;
   height: 97vh;
 }

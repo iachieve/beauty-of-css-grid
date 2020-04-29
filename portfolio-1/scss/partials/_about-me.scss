@@ -27,11 +27,15 @@
   .about-me {
     display: grid;
     grid-template-columns: [port-start]minmax(6em, 1fr) [name-start]minmax(6em, 1fr) [img-end]2fr [port-end];
+    column-gap: 1em;
   }
 
   .about-img {
     grid-column: port-start / img-end;
     grid-row: 1 / 2;
+    @include mq{
+      grid-row: 1/4;
+    }
   }
 
   .about-title {
@@ -44,5 +48,15 @@
   .about-subtitle,
   .about-text {
     grid-column: port-start / port-end;
+      @include mq {
+        grid-column: img-end / port-end;
+      }
+  }
+  .about-subtitle{
+    grid-row: 2/3;
+  }
+  .about-text{
+    grid-row: 3/4;
+
   }
 }

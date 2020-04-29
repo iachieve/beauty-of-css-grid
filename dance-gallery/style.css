@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css?family=Gochi+Hand|Sacramento&display=swap');
+body{
+  margin: 0;
+  padding: 0;
+}
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.gallery-title{
+  padding: 1rem 0;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  font-family: 'Sacramento',cursive;
+  font-size: calc(1rem + 2vw);
+  background-color: #333;
+  color: #ffffff;
+}
+ul, li{
+  list-style-type: none;
+  padding: 0;
+}
+img{
+  
+  display: block;
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  box-shadow: 1px 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.responsive{
+  display: grid;
+  /* the magic row for responsive grid */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-auto-rows: 200px;
+  grid-auto-flow: dense;
+  grid-gap: 1em;
+  margin: 1em;
+}
+
+.tall{
+  grid-row: span 2;
+}
+.wide{
+  grid-column: span 2;
+}

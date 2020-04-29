@@ -1,12 +1,12 @@
 .welcome {
-  background-image: url(../img/header-bg.png);
+  background-image: url(../images/header-bg.png);
   background-size: cover;
   background-position: center;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  position: relative;
   h1 {
     font-size: 1.5rem;
     font-weight: $fw-n;

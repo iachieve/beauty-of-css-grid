@@ -1,71 +1,161 @@
-// Initialize modules
-// Importing specific gulp API functions lets us write them below as series() instead of gulp.series()
-const { src, dest, watch, series, parallel } = require('gulp');
-// Importing all the Gulp-related packages we want to use
-const sourcemaps = require('gulp-sourcemaps');
+const gulp = require('gulp');
 const sass = require('gulp-sass');
+const babel = require('gulp-babel');
+const sourcemaps = require('gulp-sourcemaps');
 const concat = require('gulp-concat');
-const uglify = require('gulp-uglify');
+const terser = require('gulp-terser');
+const rename = require('gulp-rename');
+const del = require('del');
+const browserSync = require('browser-sync').create();
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
-var replace = require('gulp-replace');
+const replace = require('gulp-replace');
+const imagemin = require('gulp-imagemin');
+const plumber = require('gulp-plumber');
+
+const paths = {
+  html: {
+    src: './app/**/*.html',
+    dest: './build'
+  },
+  styles: {
+    src: './app/scss/**/*.scss',
+    dest: './build/assets/css'
+  },
+  scripts: {
+    src: './app/js/**/*.js',
+    dest: './build/assets/js'
+  },
+  vendors: {
+    src: './app/js/vendors/**/*.js',
+    dest: './build/assets/js'
+  },
+  images: {
+    src: './app/images/**/*',
+    dest: './build/assets/images'
+  },
+  favicon: {
+    src: './app/favicon.ico',
+    dest: './build'
+  }
+};
+
+const clean = () => del(['./build']);
+
+// Cache busting to prevent browser caching issues
+const curTime = new Date().getTime();
+const cacheBust = () =>
+  gulp
+    .src(paths.html.src)
+    .pipe(plumber())
+    .pipe(replace(/cb=\d+/g, 'cb=' + curTime))
+    .pipe(gulp.dest(paths.html.dest));
 
 
-// File paths
-const files = {
-  scssPath: './scss/**/*.scss',
-  jsPath: 'app/js/**/*.js'
-}
+// Copies all html files
+const html = () =>
+  gulp
+    .src(paths.html.src)
+    .pipe(plumber())
+    .pipe(gulp.dest(paths.html.dest));
 
-// Sass task: compiles the style.scss file into style.css
-function scssTask() {
-  return src(files.scssPath)
-    .pipe(sourcemaps.init()) // initialize sourcemaps first
-    .pipe(sass()) // compile SCSS to CSS
-    .pipe(postcss([autoprefixer(), cssnano()])) // PostCSS plugins
-    .pipe(sourcemaps.write('.')) // write sourcemaps file in current directory
-    .pipe(dest('dist')
-    ); // put final CSS in dist folder
-}
-
-// JS task: concatenates and uglifies JS files to script.js
-function jsTask() {
-  return src([
-    files.jsPath
-    //,'!' + 'includes/js/jquery.min.js', // to exclude any specific files
-  ])
-    .pipe(concat('all.js'))
-    .pipe(uglify())
-    .pipe(dest('dist')
-    );
-}
-
-// Cachebust
-function cacheBustTask() {
-  var cbString = new Date().getTime();
-  return src(['index.html'])
-    .pipe(replace(/cb=\d+/g, 'cb=' + cbString))
-    .pipe(dest('.'));
-}
-
-// Watch task: watch SCSS and JS files for changes
-// If any change, run scss and js tasks simultaneously
-function watchTask() {
-  watch([files.scssPath, files.jsPath],
-    { interval: 1000, usePolling: true }, //Makes docker work
-    series(
-      parallel(scssTask, jsTask),
-      cacheBustTask
+// Convert scss to css, auto-prefix and rename into styles.min.css
+const styles = () =>
+  gulp
+    .src(paths.styles.src)
+    .pipe(plumber())
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(postcss([autoprefixer(), cssnano()]))
+    .pipe(
+      rename({
+        basename: 'styles',
+        suffix: '.min'
+      })
     )
-  );
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(paths.styles.dest))
+    .pipe(browserSync.stream());
+
+// Minify all javascript files and concat them into a single app.min.js
+const scripts = () =>
+  gulp
+    .src(paths.scripts.src)
+    .pipe(plumber())
+    .pipe(sourcemaps.init())
+    .pipe(
+      babel({
+        presets: ['@babel/preset-env']
+      })
+    )
+    .pipe(terser())
+    .pipe(concat('app.min.js'))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(paths.scripts.dest));
+
+// Minify all javascript vendors/libs and concat them into a single vendors.min.js
+const vendors = () =>
+  gulp
+    .src(paths.vendors.src)
+    .pipe(plumber())
+    .pipe(sourcemaps.init())
+    .pipe(
+      babel({
+        presets: ['@babel/preset-env']
+      })
+    )
+    .pipe(terser())
+    .pipe(concat('vendors.min.js'))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(paths.vendors.dest));
+
+// Copy and minify images
+const images = () =>
+  gulp
+    .src(paths.images.src)
+    .pipe(plumber())
+    .pipe(imagemin())
+    .pipe(gulp.dest(paths.images.dest));
+
+// Copy the favicon
+const favicon = () =>
+  gulp
+    .src(paths.favicon.src)
+    .pipe(plumber())
+    .pipe(gulp.dest(paths.favicon.dest));
+
+// Watches all .scss, .js and .html changes and executes the corresponding task
+function watchFiles() {
+  browserSync.init({
+    server: {
+      baseDir: './build'
+    },
+    notify: false
+  });
+
+  gulp.watch(paths.styles.src, styles);
+  gulp.watch(paths.vendors.src, vendors).on('change', browserSync.reload);
+  gulp.watch(paths.favicon.src, favicon).on('change', browserSync.reload);
+  gulp.watch(paths.scripts.src, scripts).on('change', browserSync.reload);
+  gulp.watch(paths.images.src, images).on('change', browserSync.reload);
+  gulp.watch('./app/*.html', html).on('change', browserSync.reload);
 }
 
-// Export the default Gulp task so it can be run
-// Runs the scss and js tasks simultaneously
-// then runs cacheBust, then watch task
-exports.default = series(
-  parallel(scssTask, jsTask),
-  cacheBustTask,
-  watchTask
+const build = gulp.series(
+  clean,
+  gulp.parallel(styles, vendors, scripts, images, favicon),
+  cacheBust
 );
+
+const watch = gulp.series(build, watchFiles);
+
+exports.clean = clean;
+exports.styles = styles;
+exports.scripts = scripts;
+exports.vendors = vendors;
+exports.images = images;
+exports.favicon = favicon;
+exports.watch = watch;
+exports.build = build;
+exports.default = build;

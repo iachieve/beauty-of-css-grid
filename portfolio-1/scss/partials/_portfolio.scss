@@ -76,24 +76,24 @@
   }
 }
 
-// @supports (display: grid) {
-//   .portfolio-items {
-//     display: grid;
-//     grid-template-columns: repeat(2, 1fr);
-//     gap: 1em;
-//   }
+@supports (display: grid) {
+  .portfolio-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em;
+  }
 
-//   .portfolio-item.featured {
-//     grid-column: 1 / span 2;
-//     grid-row: 1 / span 2;
-//   }
+  .portfolio-item.featured {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2;
+  }
 
-//   .featured {
-//     .portfolio-title {
-//       font-size: 5rem;
-//     }
-//     .portfolio-desc{
-//       display: block;
-//     }
-//   }
-// }
+  .featured {
+    .portfolio-title {
+      font-size: 5rem;
+    }
+    .portfolio-desc{
+      display: block;
+    }
+  }
+}

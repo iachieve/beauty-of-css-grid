@@ -339,6 +339,9 @@ template {
 [hidden] {
   display: none; }
 
+*, *::after, *::before {
+  box-sizing: border-box; }
+
 body {
   color: #A7A7A7;
   font-family: "Merriweather", serif;
@@ -533,5 +536,60 @@ h2 {
     height: .8em;
     width: .8em;
     margin-left: .5em; }
+
+@supports (display: grid) {
+  .portfolio-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em; }
+  .portfolio-item.featured {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2; }
+  .featured .portfolio-title {
+    font-size: 5rem; }
+  .featured .portfolio-desc {
+    display: block; } }
+
+.contact {
+  width: 90%;
+  margin: 0 auto;
+  max-width: 50em;
+  padding: 5em 0; }
+  .contact h1 {
+    text-align: center; }
+
+form {
+  display: flex;
+  flex-direction: column; }
+
+label {
+  display: block;
+  color: #606060;
+  margin-top: 1em; }
+
+input,
+textarea {
+  display: block;
+  padding: .75rem;
+  width: 100%;
+  background: #fbfbfc;
+  border: 1px solid #A7A7A7;
+  font-size: 1.2rem; }
+
+.button {
+  display: inline-block;
+  width: auto;
+  margin-left: auto;
+  margin-top: 1em;
+  background: #03AFC2;
+  border: none;
+  padding: .5em 1.5em;
+  font-size: 2.5rem;
+  letter-spacing: 0.15em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  line-height: 1;
+  font-family: "Six Caps", sans-serif;
+  font-weight: 400; }
 
 /*# sourceMappingURL=main.css.map */

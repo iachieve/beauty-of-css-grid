@@ -478,6 +478,60 @@ h2 {
 
 .portfolio {
   text-align: center;
-  background: #E8E9EB; }
+  background: #E8E9EB;
+  padding: 5em 0; }
+
+.portfolio-items {
+  display: flex;
+  flex-wrap: wrap;
+  width: 90%;
+  margin: 0 auto;
+  max-width: 75em; }
+
+.portfolio-item {
+  position: relative;
+  overflow: hidden;
+  flex: 1 1 20rem; }
+  .portfolio-item .portfolio-image {
+    display: block;
+    width: 100%; }
+  .portfolio-item figcaption {
+    position: absolute;
+    background: rgba(3, 175, 194, 0.75);
+    color: #FFFFFF;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    transition: top ease-in-out 250ms;
+    top: 100%;
+    bottom: 0;
+    right: 0;
+    left: 0; }
+  .portfolio-item:hover figcaption,
+  .portfolio-item:focus figcaption {
+    top: 0; }
+
+.portfolio-title {
+  color: #FFFFFF;
+  font-size: 2rem;
+  margin-bottom: auto; }
+
+.portfolio-desc {
+  display: none; }
+
+.portfolio-link {
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 1.1rem;
+  text-decoration: none;
+  border-bottom: 2px solid #FFFFFF;
+  align-self: flex-start; }
+  .portfolio-link::after {
+    content: url(../img/arrow-white.svg);
+    display: inline-block;
+    height: .8em;
+    width: .8em;
+    margin-left: .5em; }
 
 /*# sourceMappingURL=main.css.map */
